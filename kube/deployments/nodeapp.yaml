@@ -12,9 +12,31 @@ spec:
         track: stable
     spec:
       containers:
-        - name: blog
-          image: "juanvallejo/node-app:latest"
+        - name: nodeapp
+          image: "juanvallejo/nodeapp:latest"
           ports:
             - name: nodeapp
               containerPort: 8000
           imagePullPolicy: IfNotPresent 
+        - name: database
+          image: "mysql:5.7.23"
+          volumeMounts:
+          - name: mysql-storage
+            mountPath: /var/lib/mysql
+          env:
+          - name: MYSQL_DATABASE
+            value: "nodeapp"
+          - name: MYSQL_ROOT_PASSWORD
+            value: "admin" 
+          - name: MYSQL_USER
+            value: "foo"
+          - name: MYSQL_PASSWORD
+            value: "password"
+          ports:
+            - name: mysql
+              containerPort: 3306
+          imagePullPolicy: IfNotPresent
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: mysql-storage
